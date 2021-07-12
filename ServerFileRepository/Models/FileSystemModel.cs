@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Hosting;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,58 +8,35 @@ using System.Threading.Tasks;
 
 namespace ServerFileRepository.Models
 {
-    public class FileSystemModel
+    public class FileSystemModel : IFileSystemModel
     {
-        private string repositoryPath;
-        private string userName;
-        private string currentDir;
-        public string CurrentDirGlobalPath => Path.Combine(repositoryPath, userName, currentDir);
+        public string RepositoryPath { get; private set; }
+        private ConcurrentDictionary<string, UserFileSystemModel> users { get; set; }
 
-        public FileSystemModel(string repositoryPath, string userName)
+        //По возможности убрать вебхост из параметров
+        public FileSystemModel(IWebHostEnvironment webHost)
         {
-            this.repositoryPath = repositoryPath;
-            this.userName = userName;
-            currentDir = "";
-
-            var curUserPath = Path.Combine(repositoryPath, userName);
-            if (!Directory.Exists(curUserPath))
-            {
-                Directory.CreateDirectory(curUserPath);
-            }
+            RepositoryPath = Path.Combine(webHost.ContentRootPath, "FileRepository");
+            users = new ConcurrentDictionary<string, UserFileSystemModel>();
         }
 
-        public bool OpenFolder(string folderName)
+        public async Task<UserFileSystemModel> GetUserModelAsync(string user)
         {
-            var folderPath = Path.Combine(CurrentDirGlobalPath, folderName);
-            if (Directory.Exists(folderPath))
+            return await Task.Run(() => GetUserModel(user));
+            
+        }
+
+        public UserFileSystemModel GetUserModel(string user)
+        {
+            if (users.Keys.Contains(user))
             {
-                currentDir = Path.Combine(currentDir, folderName);
-                return true;
+                return users[user];
             }
             else
             {
-                return false;
-            }                
-        }
-
-        public bool BackFolder()
-        {
-            if (string.IsNullOrEmpty(currentDir))
-            {
-                return false;
-            }
-            else
-            {
-                currentDir = Path.Combine(currentDir, "..");
-                return true;
-            }
-        }
-
-        public IEnumerable<IFileSystemItem> Items {
-            get {
-                IEnumerable<IFileSystemItem> items = Directory.GetDirectories(CurrentDirGlobalPath).Select(t => new Folder() { Name = Path.GetDirectoryName(t) });
-                items = items.Concat(Directory.GetFiles(CurrentDirGlobalPath).Select(t => new File() { Name = Path.GetFileName(t) }));
-                return items;
+                var userModel = new UserFileSystemModel(this, user);
+                users[user] = userModel;
+                return userModel;
             }
         }
     }

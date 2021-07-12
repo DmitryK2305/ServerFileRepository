@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ServerFileRepository.Contexts;
+using ServerFileRepository.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace ServerFileRepository
         {
             string connection = Configuration.GetConnectionString("TestDbConnection");
             services.AddDbContext<UserContext>(options => options.UseMySql(connection, ServerVersion.AutoDetect(connection)));
+            services.AddSingleton<IFileSystemModel, FileSystemModel>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -63,7 +65,7 @@ namespace ServerFileRepository
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=FileSystem}/{action=Index}/{id?}");
+                    pattern: "{controller=FileSystem}/{action=Index}");
             });
         }
     }

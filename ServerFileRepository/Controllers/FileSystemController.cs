@@ -15,27 +15,30 @@ namespace ServerFileRepository.Controllers
     public class FileSystemController : Controller
     {
         private readonly string repositoryPath;
-        private FileSystemModel fileSystemModel;
+        private IFileSystemModel fileSystemModel;
 
-        public FileSystemController(IWebHostEnvironment webHost)
+        public FileSystemController(IWebHostEnvironment webHost, IFileSystemModel model)
         { 
             repositoryPath = Path.Combine(webHost.ContentRootPath, "FileRepository");
+            fileSystemModel = model;
         }
 
         [HttpGet]
         [Authorize]
         public ActionResult Index()
         {
-            fileSystemModel = new FileSystemModel(repositoryPath, User.Identity.Name);
-            var viewModel = new FileSystemViewModel() { Items = fileSystemModel.Items };                        
-
+            var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
+            userModel.Reset();
+            var viewModel = new FileSystemViewModel() { Items = userModel.Items };
             return View(viewModel);
         }
-        
+
+        [Authorize]
         public ActionResult OpenDirectory(string name)
         {
-            fileSystemModel.OpenFolder(name);
-            var viewModel = new FileSystemViewModel() { Items = fileSystemModel.Items };
+            var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
+            userModel.OpenFolder(name);
+            var viewModel = new FileSystemViewModel() { Items = userModel.Items };
 
             return View("Index", viewModel);
         }
