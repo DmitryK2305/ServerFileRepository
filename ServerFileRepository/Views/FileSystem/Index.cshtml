@@ -1,0 +1,27 @@
+﻿@model IEnumerable<ServerFileRepository.Models.IFileSystemItem>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div>
+    <table>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>@item.Name</td>
+            @if (item is File)
+            {
+                <td>@Html.ActionLink("Скачать", "DownloadFile", new { fileName = item.Name })</td>
+
+                <td>@Html.ActionLink("Удалить", "Delete", new { fileName = item.Name })</td>
+
+            }
+            else
+            {
+                <td>@Html.ActionLink("Открыть", "OpenDirectory", new { name = item.Name })</td>
+                <td>@Html.ActionLink("Удалить", "Delete", new { fileName = item.Name })</td>
+            }
+        </tr>
+        }
+    </table>
+</div>
