@@ -44,7 +44,7 @@ namespace ServerFileRepository.Controllers
                 {
                     await Authenticate(model.Email);
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "FileSystem");
                 }
                 ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
@@ -71,7 +71,7 @@ namespace ServerFileRepository.Controllers
                     db.Users.Add(new User { Email = model.Email, Password = passHash });
                     await db.SaveChangesAsync();
                     await Authenticate(model.Email);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "FileSystem");
                 }
                 else
                     ModelState.AddModelError("", "Некорректные логин и(или) пароль");
