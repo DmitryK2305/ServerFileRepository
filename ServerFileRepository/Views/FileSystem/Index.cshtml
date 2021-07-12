@@ -1,11 +1,11 @@
-﻿@model IEnumerable<ServerFileRepository.Models.IFileSystemItem>
+﻿@model ServerFileRepository.ViewModels.FileSystemViewModel
 
 @{
     ViewData["Title"] = "Home Page";
 }
 <div>
     <table>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Items)
         {
         <tr>
             <td>@item.Name</td>
