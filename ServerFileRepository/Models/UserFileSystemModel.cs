@@ -97,7 +97,7 @@ namespace ServerFileRepository.Models
             System.IO.Directory.CreateDirectory(Path.Combine(CurrentDirGlobalPath, name));
         }
 
-        public async Task UploadFile(IFormFile file)
+        public async Task UploadFileAsync(IFormFile file)
         {
             using (var fileStream = new FileStream(Path.Combine(CurrentDirGlobalPath, file.FileName), FileMode.Create))
             {

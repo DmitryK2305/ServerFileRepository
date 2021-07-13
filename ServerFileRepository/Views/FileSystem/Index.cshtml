@@ -3,10 +3,12 @@
 @{
     ViewData["Title"] = "ServerFileRepository";
 }
-<div>
-    <input type="text" id="name">
-    <a href="#" class="btn btn-primary" id="adddir-btn">Добавить папку</a>
-</div>
+@using (Html.BeginForm("AddDirectory", "FileSystem", FormMethod.Post))
+{
+    <input type="text" name="name" />
+    <br>
+    <input type="submit" value="Добавить папку" />
+}
 @using (Html.BeginForm("UploadFile", "FileSystem", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <input type="file" name="file" />

@@ -72,6 +72,7 @@ namespace ServerFileRepository.Controllers
         }
 
         //!Отрабатывает только с Index
+        [HttpPost]
         [Authorize]
         public ActionResult AddDirectory(string name)
         {
@@ -87,7 +88,7 @@ namespace ServerFileRepository.Controllers
         public async Task<ActionResult> UploadFile(IFormFile file)
         {
             var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
-            await userModel.UploadFile(file);
+            await userModel.UploadFileAsync(file);
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
 
             return View("Index", viewModel);
