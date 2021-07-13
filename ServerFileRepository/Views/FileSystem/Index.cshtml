@@ -9,7 +9,7 @@
 </div>
 @using (Html.BeginForm("UploadFile", "FileSystem", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <input type="file" name="upload" />
+    <input type="file" name="file" />
     <br>
     <input type="submit" value="Загрузить" />
 }

@@ -22,12 +22,11 @@ namespace ServerFileRepository.Controllers
             fileSystemModel = model;
         }
 
-        [HttpGet]
         [Authorize]
         public ActionResult Index()
         {
             var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
-            userModel.Reset();
+            //userModel.Reset();
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
             return View(viewModel);
         }
@@ -85,10 +84,10 @@ namespace ServerFileRepository.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UploadFile(IFormFile path)
+        public async Task<ActionResult> UploadFile(IFormFile file)
         {
             var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
-            //userModel.AddDirectory(name);
+            await userModel.UploadFile(file);
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
 
             return View("Index", viewModel);

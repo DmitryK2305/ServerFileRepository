@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -94,6 +95,14 @@ namespace ServerFileRepository.Models
         public void AddDirectory(string name)
         {
             System.IO.Directory.CreateDirectory(Path.Combine(CurrentDirGlobalPath, name));
+        }
+
+        public async Task UploadFile(IFormFile file)
+        {
+            using (var fileStream = new FileStream(Path.Combine(CurrentDirGlobalPath, file.FileName), FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
         }
     }
 }
