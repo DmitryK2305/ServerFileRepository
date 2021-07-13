@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace ServerFileRepository.Models
 {
-    public class Folder : IFileSystemItem
+    public class BackFolder : IFileSystemItem
     {
+        public BackFolder() => Name = "..";
+
         public string Name { get; set; }
     }
 }

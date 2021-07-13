@@ -20,16 +20,16 @@ namespace ServerFileRepository.Models
             currentDir = "";
 
             var curUserPath = Path.Combine(owner.RepositoryPath, userName);
-            if (!Directory.Exists(curUserPath))
+            if (!System.IO.Directory.Exists(curUserPath))
             {
-                Directory.CreateDirectory(curUserPath);
+                System.IO.Directory.CreateDirectory(curUserPath);
             }
         }
 
-        public bool OpenFolder(string folderName)
+        public bool OpenDirectory(string folderName)
         {
             var folderPath = Path.Combine(CurrentDirGlobalPath, folderName);
-            if (Directory.Exists(folderPath))
+            if (System.IO.Directory.Exists(folderPath))
             {
                 currentDir = Path.Combine(currentDir, folderName);
                 return true;
@@ -40,7 +40,7 @@ namespace ServerFileRepository.Models
             }
         }
 
-        public bool BackFolder()
+        public bool BackDirectory()
         {
             if (string.IsNullOrEmpty(currentDir))
             {
@@ -48,15 +48,18 @@ namespace ServerFileRepository.Models
             }
             else
             {
-                currentDir = Path.Combine(currentDir, "..");
+                currentDir = Path.GetDirectoryName(currentDir);
                 return true;
             }
         }
 
         public IEnumerable<IFileSystemItem> Items {
             get {
-                IEnumerable<IFileSystemItem> items = Directory.GetDirectories(CurrentDirGlobalPath).Select(t => new Folder() { Name = Path.GetFileName(t) });
-                items = items.Concat(Directory.GetFiles(CurrentDirGlobalPath).Select(t => new File() { Name = Path.GetFileName(t) }));
+                IEnumerable<IFileSystemItem> items = System.IO.Directory.GetDirectories(CurrentDirGlobalPath).Select(t => new Directory() { Name = Path.GetFileName(t) });
+                items = items.Concat(System.IO.Directory.GetFiles(CurrentDirGlobalPath).Select(t => new File() { Name = Path.GetFileName(t) }));
+
+                if (!string.IsNullOrEmpty(currentDir))
+                    items = new IFileSystemItem[] { new BackFolder()}.Concat(items);
                 return items;
             }
         }
@@ -64,6 +67,33 @@ namespace ServerFileRepository.Models
         public void Reset()
         {
             currentDir = "";
+        }
+
+        public bool DeleteFile(string name)
+        {
+            try
+            {
+                System.IO.File.Delete(Path.Combine(CurrentDirGlobalPath, name));
+                return true;
+            }
+            catch { }
+            return false;
+        }
+
+        public bool DeleteDirectory(string name)
+        {
+            try
+            {
+                System.IO.Directory.Delete(Path.Combine(CurrentDirGlobalPath, name), true);
+                return true;
+            }
+            catch { }
+            return false;
+        }
+
+        public void AddDirectory(string name)
+        {
+            System.IO.Directory.CreateDirectory(Path.Combine(CurrentDirGlobalPath, name));
         }
     }
 }

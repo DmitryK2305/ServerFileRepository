@@ -1,27 +1,40 @@
 ﻿@model ServerFileRepository.ViewModels.FileSystemViewModel
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "ServerFileRepository";
+}
+<div>
+    <input type="text" id="name">
+    <a href="#" class="btn btn-primary" id="adddir-btn">Добавить папку</a>
+</div>
+@using (Html.BeginForm("UploadFile", "FileSystem", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="upload" />
+    <br>
+    <input type="submit" value="Загрузить" />
 }
 <div>
     <table>
         @foreach (var item in Model.Items)
         {
-        <tr>
-            <td>@item.Name</td>
-            @if (item is File)
-            {
-                <td>@Html.ActionLink("Скачать", "DownloadFile", new { fileName = item.Name })</td>
-
-                <td>@Html.ActionLink("Удалить", "Delete", new { fileName = item.Name })</td>
-
-            }
-            else
-            {
-                <td>@Html.ActionLink("Открыть", "OpenDirectory", new { name = item.Name })</td>
-                <td>@Html.ActionLink("Удалить", "Delete", new { fileName = item.Name })</td>
-            }
-        </tr>
+            <tr>
+                <td>@item.Name</td>
+                @if (item is File)
+                {
+                    <td>@Html.ActionLink("Скачать", "DownloadFile", new { fileName = item.Name })</td>
+                    <td>@Html.ActionLink("Удалить", "DeleteFile", new { name = item.Name })</td>
+                }
+                @if (item is BackFolder)
+                {
+                    <td>@Html.ActionLink("Назад", "GoBack")</td>
+                    <td></td>
+                }
+                @if (item is Directory)
+                {
+                    <td>@Html.ActionLink("Открыть", "OpenDirectory", new { name = item.Name })</td>
+                    <td>@Html.ActionLink("Удалить", "DeleteDirectory", new { name = item.Name })</td>
+                }
+            </tr>
         }
     </table>
 </div>
