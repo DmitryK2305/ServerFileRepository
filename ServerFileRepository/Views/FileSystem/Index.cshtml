@@ -23,7 +23,7 @@
                 <td>@item.Name</td>
                 @if (item is File)
                 {
-                    <td>@Html.ActionLink("Скачать", "DownloadFile", new { fileName = item.Name })</td>
+                    <td>@Html.ActionLink("Скачать", "DownloadFile", new { name = item.Name })</td>
                     <td>@Html.ActionLink("Удалить", "DeleteFile", new { name = item.Name })</td>
                 }
                 @if (item is BackFolder)

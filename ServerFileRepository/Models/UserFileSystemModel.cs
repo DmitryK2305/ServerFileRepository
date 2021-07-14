@@ -97,12 +97,18 @@ namespace ServerFileRepository.Models
             System.IO.Directory.CreateDirectory(Path.Combine(CurrentDirGlobalPath, name));
         }
 
+        //По возможности заменить IFormFile
         public async Task UploadFileAsync(IFormFile file)
         {
             using (var fileStream = new FileStream(Path.Combine(CurrentDirGlobalPath, file.FileName), FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
             }
+        }
+
+        public string GetFilePath(string name)
+        {
+            return Path.Combine(CurrentDirGlobalPath, name);
         }
     }
 }

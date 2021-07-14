@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using File = ServerFileRepository.Models.File;
 
@@ -16,10 +17,12 @@ namespace ServerFileRepository.Controllers
     public class FileSystemController : Controller
     {
         private IFileSystemModel fileSystemModel;
+        private IWebHostEnvironment webHost;
 
         public FileSystemController(IWebHostEnvironment webHost, IFileSystemModel model)
         { 
             fileSystemModel = model;
+            this.webHost = webHost;
         }
 
         [Authorize]
@@ -92,6 +95,22 @@ namespace ServerFileRepository.Controllers
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
 
             return View("Index", viewModel);
+        }
+        
+        [Authorize]
+        public FileResult DownloadFile(string name)
+        {            
+            var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
+            var filePath = userModel.GetFilePath(name);
+
+            var cd = new ContentDisposition
+            {
+                FileName = Path.GetFileName(filePath),
+                Inline = false
+            };
+            
+            HttpContext.Response.Headers.Add("Content-Disposition", cd.ToString());
+            return this.File(new FileStream(filePath, FileMode.Open), MediaTypeNames.Application.Octet);
         }
     }
 }
