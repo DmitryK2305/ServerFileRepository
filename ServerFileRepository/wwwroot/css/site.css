@@ -69,3 +69,46 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+/* GroupBox styles
+-------------------------------------------------- */
+fieldset {
+    background-color: #eeeeee;
+}
+
+legend {
+    background-color: gray;
+    color: white;
+    padding: 5px 10px;
+}
+
+input {
+    margin: 5px;
+}
+
+/* FileTable styles
+-------------------------------------------------- */
+table {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    font-size: 14px;
+    background: white;
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin: 20px auto 20px;
+}
+
+th {
+    font-size: 14px;
+    font-weight: normal;
+    color: white;
+    border-bottom: 2px solid #ccc;
+    padding: 10px 8px;
+    background-color: gray;
+}
+
+td {
+    border-bottom: 1px solid #ccc;
+    padding: 9px 8px;
+    background: #eeeeee;
+}
