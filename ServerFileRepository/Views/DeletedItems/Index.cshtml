@@ -1,0 +1,21 @@
+﻿@model ServerFileRepository.ViewModels.DeletedItemsViewModel
+
+@{
+    ViewData["Title"] = "DeletedFiles";
+}
+<div>
+    <table>
+        <tr>
+            <th>Файл/Директория</th>
+            <th>Время</th>
+        </tr>
+
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.Path</td>
+                <td>@item.Time</td>
+            </tr>
+        }
+    </table>
+</div>
