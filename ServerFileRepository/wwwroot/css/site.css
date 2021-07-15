@@ -112,3 +112,13 @@ td {
     padding: 9px 8px;
     background: #eeeeee;
 }
+
+/* Username styles
+-------------------------------------------------- */
+label.username {
+    color: cornflowerblue;
+    vertical-align: central;
+    margin-right: 20px;
+    margin-top:auto;
+    margin-bottom:auto;
+}

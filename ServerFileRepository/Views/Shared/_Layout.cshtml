@@ -25,8 +25,11 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="DeletedItems" asp-action="Index">Список удаленных файлов</a>
                         </li>
                     </ul>
-                    <label>@User.Identity.Name</label>
-                    <a asp-action="Logout" asp-controller="Account">Выход</a>
+                    <label class="username">@User.Identity.Name</label>
+                    @if (!string.IsNullOrEmpty(User.Identity.Name))
+                    {
+                        <a asp-action="Logout" asp-controller="Account">Выход</a>
+                    }
                 </div>
             </div>
         </nav>
