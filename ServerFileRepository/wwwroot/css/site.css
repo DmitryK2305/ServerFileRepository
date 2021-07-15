@@ -74,6 +74,7 @@ body {
 -------------------------------------------------- */
 fieldset {
     background-color: #eeeeee;
+    padding: 15px 15px;
 }
 
 legend {
@@ -116,7 +117,8 @@ td {
 /* Username styles
 -------------------------------------------------- */
 label.username {
-    color: cornflowerblue;
+    color: black;
+    font-weight:bold;
     vertical-align: central;
     margin-right: 20px;
     margin-top:auto;
