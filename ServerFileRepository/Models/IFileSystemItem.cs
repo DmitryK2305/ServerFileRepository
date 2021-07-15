@@ -8,5 +8,6 @@ namespace ServerFileRepository.Models
     public interface IFileSystemItem
     {
         public string Name { get; set; }
+        public DateTime CreateTime { get; set; }
     }
 }

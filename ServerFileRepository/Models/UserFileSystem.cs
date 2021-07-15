@@ -57,7 +57,7 @@ namespace ServerFileRepository.Models
         public IEnumerable<IFileSystemItem> Items {
             get {
                 IEnumerable<IFileSystemItem> items = System.IO.Directory.GetDirectories(CurrentDirGlobalPath).Select(t => new Directory() { Name = Path.GetFileName(t) });
-                items = items.Concat(System.IO.Directory.GetFiles(CurrentDirGlobalPath).Select(t => new File() { Name = Path.GetFileName(t) }));
+                items = items.Concat(System.IO.Directory.GetFiles(CurrentDirGlobalPath).Select(t => new File() { Name = Path.GetFileName(t), CreateTime = System.IO.File.GetCreationTime(t) }));
 
                 if (!string.IsNullOrEmpty(CurrentDir))
                     items = new IFileSystemItem[] { new BackFolder()}.Concat(items);

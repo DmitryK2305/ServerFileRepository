@@ -10,5 +10,6 @@ namespace ServerFileRepository.Models
         public BackFolder() => Name = "..";
 
         public string Name { get; set; }
+        public DateTime CreateTime { get; set; }
     }
 }

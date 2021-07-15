@@ -114,6 +114,10 @@ td {
     background: #eeeeee;
 }
 
+td.control-cell {
+    text-align: right
+}
+
 /* Username styles
 -------------------------------------------------- */
 label.username {
@@ -124,3 +128,4 @@ label.username {
     margin-top:auto;
     margin-bottom:auto;
 }
+

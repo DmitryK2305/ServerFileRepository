@@ -19,29 +19,45 @@
 <div>
     <table>
         <tr>
+            <th></th>
             <th>Имя</th>
-            <th>Функция 1</th>
-            <th>Функция 2</th>
+            <th>Время загрузки</th>
+            <th></th>
         </tr>
 
         @foreach (var item in Model.Items)
         {
             <tr>
-                <td>@item.Name</td>
+                @if (item is Directory)
+                {
+                    <td><img src="~/img/folder.png" alt="Папка" /></td>
+                }
+                else
+                {
+                    <td></td>
+                }
+
+                <td>@item.Name</td> 
                 @if (item is File)
                 {
-                    <td>@Html.ActionLink("Скачать", "DownloadFile", new { name = item.Name })</td>
-                    <td>@Html.ActionLink("Удалить", "DeleteFile", new { name = item.Name })</td>
+                    <td>@item.CreateTime</td>
+                    <td class="control-cell">
+                        @Html.ActionLink("Скачать", "DownloadFile", new { name = item.Name })
+                        @Html.ActionLink("Удалить", "DeleteFile", new { name = item.Name })
+                    </td>
                 }
                 @if (item is BackFolder)
                 {
-                    <td>@Html.ActionLink("Назад", "GoBack")</td>
                     <td></td>
+                    <td class="control-cell">@Html.ActionLink("Назад", "GoBack")</td>                    
                 }
                 @if (item is Directory)
                 {
-                    <td>@Html.ActionLink("Открыть", "OpenDirectory", new { name = item.Name })</td>
-                    <td>@Html.ActionLink("Удалить", "DeleteDirectory", new { name = item.Name })</td>
+                    <td></td>
+                    <td class="control-cell">
+                        @Html.ActionLink("Открыть", "OpenDirectory", new { name = item.Name })
+                        @Html.ActionLink("Удалить", "DeleteDirectory", new { name = item.Name })
+                    </td>
                 }
             </tr>
         }
