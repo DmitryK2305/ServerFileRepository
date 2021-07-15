@@ -8,25 +8,25 @@ using System.Threading.Tasks;
 
 namespace ServerFileRepository.Models
 {
-    public class FileSystemModel : IFileSystemModel
+    public class FileSystem : IFileSystem
     {
         public string RepositoryPath { get; private set; }
-        private ConcurrentDictionary<string, UserFileSystemModel> users { get; set; }
+        private ConcurrentDictionary<string, UserFileSystem> users { get; set; }
 
         //По возможности убрать вебхост из параметров
-        public FileSystemModel(IWebHostEnvironment webHost)
+        public FileSystem(IWebHostEnvironment webHost)
         {
             RepositoryPath = Path.Combine(webHost.ContentRootPath, "FileRepository");
-            users = new ConcurrentDictionary<string, UserFileSystemModel>();
+            users = new ConcurrentDictionary<string, UserFileSystem>();
         }
 
-        public async Task<UserFileSystemModel> GetUserModelAsync(string user)
+        public async Task<UserFileSystem> GetUserModelAsync(string user)
         {
             return await Task.Run(() => GetUserModel(user));
             
         }
 
-        public UserFileSystemModel GetUserModel(string user)
+        public UserFileSystem GetUserModel(string user)
         {
             if (users.Keys.Contains(user))
             {
@@ -34,7 +34,7 @@ namespace ServerFileRepository.Models
             }
             else
             {
-                var userModel = new UserFileSystemModel(this, user);
+                var userModel = new UserFileSystem(this, user);
                 users[user] = userModel;
                 return userModel;
             }

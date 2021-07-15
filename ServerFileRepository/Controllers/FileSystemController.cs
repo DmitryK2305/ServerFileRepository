@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ServerFileRepository.Contexts;
+using ServerFileRepository.Contexts.Enums;
 using ServerFileRepository.Models;
 using ServerFileRepository.ViewModels;
 using System;
@@ -16,20 +18,20 @@ namespace ServerFileRepository.Controllers
 {
     public class FileSystemController : Controller
     {
-        private IFileSystemModel fileSystemModel;
-        private IWebHostEnvironment webHost;
+        private readonly IFileSystem fileSystemModel;
+        private readonly UserContext db;
 
-        public FileSystemController(IWebHostEnvironment webHost, IFileSystemModel model)
+        public FileSystemController(IFileSystem model, UserContext userContext)
         { 
-            fileSystemModel = model;
-            this.webHost = webHost;
+            fileSystemModel = model;            
+            db = userContext;
         }
 
         [Authorize]
         public ActionResult Index()
-        {
+        { 
             var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
-            //userModel.Reset();
+            
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
             return View(viewModel);
         }
@@ -38,7 +40,7 @@ namespace ServerFileRepository.Controllers
         public ActionResult OpenDirectory(string name)
         {
             var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
-            userModel.OpenDirectory(name);
+            userModel.OpenDirectory(name);     
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
 
             return View("Index", viewModel);
@@ -57,8 +59,22 @@ namespace ServerFileRepository.Controllers
         [Authorize]
         public ActionResult DeleteFile(string name)
         {
-            var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
-            userModel.DeleteFile(name);
+            var userName = User.Identity.Name;
+            var userModel = fileSystemModel.GetUserModel(userName);
+            var success = userModel.DeleteFile(name);
+            if (success)
+            {
+                db.Events.Add(new Contexts.Tables.FileSystemEvent()
+                {
+                    Type = FileSystemEventType.Delete,
+                    Time = DateTime.Now,
+                    UserLogin = userName,
+                    FilePath = Path.Combine(userModel.CurrentDir, name),
+                    IsFolder = false
+                });
+                db.SaveChanges();
+            }
+
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
 
             return View("Index", viewModel);
@@ -67,20 +83,47 @@ namespace ServerFileRepository.Controllers
         [Authorize]
         public ActionResult DeleteDirectory(string name)
         {
-            var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
-            userModel.DeleteDirectory(name);
+            var userName = User.Identity.Name;
+            var userModel = fileSystemModel.GetUserModel(userName);
+            var success = userModel.DeleteDirectory(name);
+            if (success)
+            {
+                db.Events.Add(new Contexts.Tables.FileSystemEvent()
+                {
+                    Type = FileSystemEventType.Delete,
+                    Time = DateTime.Now,
+                    UserLogin = userName,
+                    FilePath = Path.Combine(userModel.CurrentDir, name),
+                    IsFolder = true
+                });
+                db.SaveChanges();
+            }
+
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
 
             return View("Index", viewModel);
         }
 
-        //!Отрабатывает только с Index
         [HttpPost]
         [Authorize]
         public ActionResult AddDirectory(string name)
         {
-            var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
-            userModel.AddDirectory(name);
+            var userName = User.Identity.Name;
+            var userModel = fileSystemModel.GetUserModel(userName);
+            var success = userModel.AddDirectory(name);
+            if (success)
+            {
+                db.Events.Add(new Contexts.Tables.FileSystemEvent()
+                {
+                    Type = FileSystemEventType.Create,
+                    Time = DateTime.Now,
+                    UserLogin = userName,
+                    FilePath = Path.Combine(userModel.CurrentDir, name),
+                    IsFolder = true
+                });
+                db.SaveChanges();
+            }
+
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
 
             return View("Index", viewModel);
@@ -90,8 +133,22 @@ namespace ServerFileRepository.Controllers
         [Authorize]
         public async Task<ActionResult> UploadFile(IFormFile file)
         {
-            var userModel = fileSystemModel.GetUserModel(User.Identity.Name);
-            await userModel.UploadFileAsync(file);
+            var userName = User.Identity.Name;
+            var userModel = fileSystemModel.GetUserModel(User.Identity.Name);            
+            var success = await userModel.UploadFileAsync(file);
+            if (success)
+            {
+                db.Events.Add(new Contexts.Tables.FileSystemEvent()
+                {
+                    Type = FileSystemEventType.Create,
+                    Time = DateTime.Now,
+                    UserLogin = userName,
+                    FilePath = Path.Combine(userModel.CurrentDir, file.FileName),
+                    IsFolder = false
+                });
+                db.SaveChanges();
+            }
+
             var viewModel = new FileSystemViewModel() { Items = userModel.Items };
 
             return View("Index", viewModel);

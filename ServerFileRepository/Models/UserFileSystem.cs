@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace ServerFileRepository.Models
 {
-    public class UserFileSystemModel
+    public class UserFileSystem
     {
-        private readonly FileSystemModel owner;
+        private readonly FileSystem owner;
         private string userName;
-        private string currentDir;
-        public string CurrentDirGlobalPath => Path.Combine(owner.RepositoryPath, userName, currentDir);
+        public string CurrentDir { get; private set; }
+        public string CurrentDirGlobalPath => Path.Combine(owner.RepositoryPath, userName, CurrentDir);
 
-        public UserFileSystemModel(FileSystemModel mainModel, string userName)
+        public UserFileSystem(FileSystem mainModel, string userName)
         {
             owner = mainModel;
             this.userName = userName;
-            currentDir = "";
+            CurrentDir = "";
 
             var curUserPath = Path.Combine(owner.RepositoryPath, userName);
             if (!System.IO.Directory.Exists(curUserPath))
@@ -32,7 +32,7 @@ namespace ServerFileRepository.Models
             var folderPath = Path.Combine(CurrentDirGlobalPath, folderName);
             if (System.IO.Directory.Exists(folderPath))
             {
-                currentDir = Path.Combine(currentDir, folderName);
+                CurrentDir = Path.Combine(CurrentDir, folderName);
                 return true;
             }
             else
@@ -43,13 +43,13 @@ namespace ServerFileRepository.Models
 
         public bool BackDirectory()
         {
-            if (string.IsNullOrEmpty(currentDir))
+            if (string.IsNullOrEmpty(CurrentDir))
             {
                 return false;
             }
             else
             {
-                currentDir = Path.GetDirectoryName(currentDir);
+                CurrentDir = Path.GetDirectoryName(CurrentDir);
                 return true;
             }
         }
@@ -59,7 +59,7 @@ namespace ServerFileRepository.Models
                 IEnumerable<IFileSystemItem> items = System.IO.Directory.GetDirectories(CurrentDirGlobalPath).Select(t => new Directory() { Name = Path.GetFileName(t) });
                 items = items.Concat(System.IO.Directory.GetFiles(CurrentDirGlobalPath).Select(t => new File() { Name = Path.GetFileName(t) }));
 
-                if (!string.IsNullOrEmpty(currentDir))
+                if (!string.IsNullOrEmpty(CurrentDir))
                     items = new IFileSystemItem[] { new BackFolder()}.Concat(items);
                 return items;
             }
@@ -67,7 +67,7 @@ namespace ServerFileRepository.Models
 
         public void Reset()
         {
-            currentDir = "";
+            CurrentDir = "";
         }
 
         public bool DeleteFile(string name)
@@ -92,18 +92,37 @@ namespace ServerFileRepository.Models
             return false;
         }
 
-        public void AddDirectory(string name)
+        public bool AddDirectory(string name)
         {
-            System.IO.Directory.CreateDirectory(Path.Combine(CurrentDirGlobalPath, name));
+            if (!string.IsNullOrEmpty(name))
+            {
+                try
+                {
+                    System.IO.Directory.CreateDirectory(Path.Combine(CurrentDirGlobalPath, name));
+                    return true;
+                }
+                catch { }
+            }
+            return false;
         }
 
         //По возможности заменить IFormFile
-        public async Task UploadFileAsync(IFormFile file)
+        //Проверить словится ли исключение из FileStream
+        public async Task<bool> UploadFileAsync(IFormFile file)
         {
-            using (var fileStream = new FileStream(Path.Combine(CurrentDirGlobalPath, file.FileName), FileMode.Create))
+            if (file is not null)
             {
-                await file.CopyToAsync(fileStream);
+                try
+                {
+                    using (var fileStream = new FileStream(Path.Combine(CurrentDirGlobalPath, file.FileName), FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileStream);
+                    }
+                    return true;
+                }
+                catch { }
             }
+            return false;
         }
 
         public string GetFilePath(string name)

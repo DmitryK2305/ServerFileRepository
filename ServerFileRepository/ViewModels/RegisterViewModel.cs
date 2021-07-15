@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ServerFileRepository.ViewModels
 {
-    public class RegisterModel
+    public class RegisterViewModel
     {
         [Required(ErrorMessage ="Не указан Email")]
-        public string Email { get; set; }
+        public string Login { get; set; }
 
         [Required(ErrorMessage ="Не указан пароль")]
         [DataType(DataType.Password)]

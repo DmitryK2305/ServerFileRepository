@@ -3,20 +3,27 @@
 @{
     ViewData["Title"] = "ServerFileRepository";
 }
-@using (Html.BeginForm("AddDirectory", "FileSystem", FormMethod.Post))
-{
-    <input type="text" name="name" />
-    <br>
-    <input type="submit" value="Добавить папку" />
-}
-@using (Html.BeginForm("UploadFile", "FileSystem", FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    <input type="file" name="file" />
-    <br>
-    <input type="submit" value="Загрузить" />
-}
+<fieldset>
+    <legend>Добавление</legend>
+    @using (Html.BeginForm("AddDirectory", "FileSystem", FormMethod.Post))
+    {
+        <input type="text" name="name" />
+        <input type="submit" value="Добавить папку" />
+    }
+    @using (Html.BeginForm("UploadFile", "FileSystem", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="file" name="file" />        
+        <input type="submit" value="Загрузить" />
+    }
+</fieldset>
 <div>
     <table>
+        <tr>
+            <th>Имя</th>
+            <th>Функция 1</th>
+            <th>Функция 2</th>
+        </tr>
+
         @foreach (var item in Model.Items)
         {
             <tr>

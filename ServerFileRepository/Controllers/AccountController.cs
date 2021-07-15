@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServerFileRepository.Contexts;
-using ServerFileRepository.Models;
 using ServerFileRepository.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using ServerFileRepository.Contexts.Tables;
 
 namespace ServerFileRepository.Controllers
 {
@@ -32,17 +32,17 @@ namespace ServerFileRepository.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if(ModelState.IsValid)
             {
                 //Убрать прямую проверку по паролю
-                var passWithSalt = model.Password + model.Email;
+                var passWithSalt = model.Password + model.Login;
                 var passHash = Convert.ToBase64String(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(passWithSalt)));
-                User user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email && u.Password == passHash);
+                User user = await db.Users.FirstOrDefaultAsync(u => u.Login == model.Login && u.Password == passHash);
                 if (user != null)
                 {
-                    await Authenticate(model.Email);
+                    await Authenticate(model.Login);
 
                     return RedirectToAction("Index", "FileSystem");
                 }
@@ -59,18 +59,18 @@ namespace ServerFileRepository.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {                
-                User user = await db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                User user = await db.Users.FirstOrDefaultAsync(u => u.Login == model.Login);
                 if (user == null)
                 {
-                    var passWithSalt = model.Password + model.Email;
+                    var passWithSalt = model.Password + model.Login;
                     var passHash = Convert.ToBase64String(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(passWithSalt)));
-                    db.Users.Add(new User { Email = model.Email, Password = passHash });
+                    db.Users.Add(new User { Login = model.Login, Password = passHash });
                     await db.SaveChangesAsync();
-                    await Authenticate(model.Email);
+                    await Authenticate(model.Login);
                     return RedirectToAction("Index", "FileSystem");
                 }
                 else

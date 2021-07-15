@@ -29,7 +29,7 @@ namespace ServerFileRepository
         {
             string connection = Configuration.GetConnectionString("TestDbConnection");
             services.AddDbContext<UserContext>(options => options.UseMySql(connection, ServerVersion.AutoDetect(connection)));
-            services.AddSingleton<IFileSystemModel, FileSystemModel>();
+            services.AddSingleton<IFileSystem, FileSystem>();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>

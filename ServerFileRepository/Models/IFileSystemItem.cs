@@ -7,6 +7,6 @@ namespace ServerFileRepository.Models
 {
     public interface IFileSystemItem
     {
-        string Name { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace ServerFileRepository.Models
+namespace ServerFileRepository.ViewModels
 {
     public class ErrorViewModel
     {

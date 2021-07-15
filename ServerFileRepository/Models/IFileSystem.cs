@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace ServerFileRepository.Models
 {
-    public interface IFileSystemModel
+    public interface IFileSystem
     {
         string RepositoryPath { get; }
 
-        Task<UserFileSystemModel> GetUserModelAsync(string user);
-        UserFileSystemModel GetUserModel(string user);
+        Task<UserFileSystem> GetUserModelAsync(string user);
+        UserFileSystem GetUserModel(string user);
     }
 }
