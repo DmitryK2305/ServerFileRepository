@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ServerFileRepository.Models;
+using ServerFileRepository.Contexts.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +20,6 @@ namespace ServerFileRepository.Contexts
         }
 
         public DbSet<User> Users { get; set; }
-
+        public DbSet<FileSystemEvent> Events { get; set; }
     }
 }
